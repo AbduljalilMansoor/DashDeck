@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ودجت الطقس: Open-Meteo -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- الشريط الأحمر لتنبيه حزام الأمان فوق أي تطبيق (يُمنح من الإعدادات أو عبر ADB) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- ودجت الطقس/الصلاة: موقع السيارة -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <!-- قراءة بيانات السيارة (مسار احتياطي عبر CarPropertyManager) -->
+    <uses-permission android:name="android.car.permission.CAR_SPEED"/>
+    <uses-permission android:name="android.car.permission.CAR_ENERGY"/>
+    <uses-permission android:name="android.car.permission.CAR_MILEAGE"/>
+    <uses-permission android:name="android.car.permission.CAR_POWERTRAIN"/>
+    <uses-permission android:name="android.car.permission.CAR_INFO"/>
+
+    <application
+        android:label="Dash Deck"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
+        android:supportsRtl="true">
+
+        <uses-library android:name="android.car" android:required="false"/>
+        <uses-library android:name="autolink.sdk" android:required="false"/>
+
+        <!-- مصمّم شاشة العدادات: هو الواجهة الرئيسية للتطبيق -->
+        <activity
+            android:name=".DeckActivity"
+            android:exported="true"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="orientation|screenSize|keyboardHidden|uiMode|density|smallestScreenSize|screenLayout">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- الشاشة التي تُعرض على Display 2 (العدادات) -->
+        <activity
+            android:name=".DeckDisplayActivity"
+            android:exported="true"
+            android:taskAffinity="com.dashdeck.app.deck"
+            android:excludeFromRecents="true"
+            android:resizeableActivity="true"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
+            android:configChanges="orientation|screenSize|keyboardHidden|uiMode|density|smallestScreenSize|screenLayout"/>
+
+        <service android:name=".BeltService" android:exported="false"/>
+
+        <!-- يسمح لودجت الوسائط بقراءة جلسات التشغيل والتحكم بها -->
+        <service
+            android:name=".MediaListener"
+            android:exported="true"
+            android:label="Dash Deck"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".BootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
